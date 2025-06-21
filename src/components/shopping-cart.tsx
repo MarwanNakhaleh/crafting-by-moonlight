@@ -1,44 +1,53 @@
 "use client";
 
-import { useState } from "react";
 import { CartSummary } from "@/components/cart-summary";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart as ShoppingCartIcon } from "lucide-react";
 import Link from "next/link";
-import { Product } from "@/types/product";
 import { CartProductCard } from "./cart-product-card";
-
+import { useCart } from "@/contexts/cart-context";
+import { useState } from "react";
 
 export function ShoppingCart() {
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const { cartItems, updateQuantity, removeFromCart, getCartItemCount } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
-  const updateQuantity = (id: string, quantity: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+  const handleCheckout = async () => {
+    setIsCheckingOut(true);
+    
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cartItems }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error('Checkout error:', data.error);
+        alert('Failed to start checkout. Please try again.');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      alert('Network error. Please check your connection and try again.');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
-  const removeItem = (id: string) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const handleCheckout = () => {
-    // In a real app, this would navigate to checkout or integrate with payment processing
-    alert("Proceeding to checkout... (This would integrate with a payment system)");
-  };
-
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * (item.quantity || 0)), 0);
-  const tax = subtotal * 0.08; // 8% tax
-  const shipping = subtotal > 50 ? 0 : 5.99; // Free shipping over $50
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const tax = subtotal * 0.08;
+  const shipping = subtotal > 50 ? 0 : 5.99;
   const total = subtotal + tax + shipping;
-  const itemCount = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const itemCount = getCartItemCount();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Header */}
       <div className="mb-8">
         <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -51,7 +60,6 @@ export function ShoppingCart() {
       </div>
 
       {cartItems.length === 0 ? (
-        /* Empty Cart State */
         <div className="text-center py-16">
           <ShoppingCartIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
@@ -63,9 +71,7 @@ export function ShoppingCart() {
           </Button>
         </div>
       ) : (
-        /* Cart with Items */
         <div className="lg:grid lg:grid-cols-12 lg:gap-12">
-          {/* Cart Items */}
           <div className="lg:col-span-8">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-6">Cart Items</h2>
@@ -74,13 +80,12 @@ export function ShoppingCart() {
                   key={item.id}
                   {...item}
                   onUpdateQuantity={updateQuantity}
-                  onRemove={removeItem}
+                  onRemove={removeFromCart}
                 />
               ))}
             </div>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-4 mt-8 lg:mt-0">
             <CartSummary
               subtotal={subtotal}
@@ -89,6 +94,7 @@ export function ShoppingCart() {
               total={total}
               itemCount={itemCount}
               onCheckout={handleCheckout}
+              isCheckingOut={isCheckingOut}
             />
           </div>
         </div>

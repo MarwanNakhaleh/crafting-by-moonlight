@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Loader2 } from "lucide-react";
 
 interface CartSummaryProps {
   subtotal: number;
@@ -12,6 +12,7 @@ interface CartSummaryProps {
   total: number;
   itemCount: number;
   onCheckout: () => void;
+  isCheckingOut?: boolean;
 }
 
 export function CartSummary({
@@ -21,6 +22,7 @@ export function CartSummary({
   total,
   itemCount,
   onCheckout,
+  isCheckingOut = false,
 }: CartSummaryProps) {
   return (
     <Card className="sticky top-24">
@@ -57,9 +59,16 @@ export function CartSummary({
           onClick={onCheckout}
           className="w-full"
           size="lg"
-          disabled={itemCount === 0}
+          disabled={itemCount === 0 || isCheckingOut}
         >
-          Proceed to Checkout
+          {isCheckingOut ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            "Checkout"
+          )}
         </Button>
         
         <p className="text-xs text-gray-500 text-center">

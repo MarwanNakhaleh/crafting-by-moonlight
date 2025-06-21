@@ -3,8 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
+import { useCart } from "@/contexts/cart-context";
+import { useEffect, useState } from "react";
+
+function CartBadge() {
+  const { getCartItemCount } = useCart();
+  const itemCount = getCartItemCount();
+
+  if (itemCount <= 0) return null;
+
+  return (
+    <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+      {itemCount}
+    </span>
+  );
+}
 
 export function Header() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <header className="fixed top-0 w-full bg-white/90 backdrop-blur border-b border-gray-200 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -26,9 +47,10 @@ export function Header() {
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/cart" className="flex items-center gap-1">
+            <Link href="/cart" className="flex items-center gap-1 relative">
               <ShoppingCart className="w-4 h-4" />
               Cart
+              {isMounted && <CartBadge />}
             </Link>
           </Button>
         </nav>

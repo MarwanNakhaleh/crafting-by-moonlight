@@ -7,10 +7,9 @@ export interface Product {
   imageUrl: string;
   image: string;
   category: string;
-  quantity?: number; // Optional for cart items
+  quantity?: number; 
 }
 
-// Utility type for cart items (products with required quantity)
 export interface CartItem extends Product {
   quantity: number;
 } 
