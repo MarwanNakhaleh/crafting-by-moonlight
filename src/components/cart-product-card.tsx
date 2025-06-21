@@ -14,7 +14,6 @@ interface CartProductCardProps extends Product {
 export function CartProductCard({
   id,
   title,
-  description,
   price,
   quantity = 0,
   imageUrl,
