@@ -35,19 +35,19 @@ export function Header() {
         </Link>
         <nav className="flex items-center gap-2">
           <Button variant="ghost" asChild>
-            <Link href="/login" className="flex items-center gap-1">
+            <Link href="/shop/login" className="flex items-center gap-1">
               <LogIn className="w-4 h-4" />
               Login
             </Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/signup" className="flex items-center gap-1">
+            <Link href="/shop/signup" className="flex items-center gap-1">
               <UserPlus className="w-4 h-4" />
               Sign Up
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/cart" className="flex items-center gap-1 relative">
+            <Link href="/shop/cart" className="flex items-center gap-1 relative">
               <ShoppingCart className="w-4 h-4" />
               Cart
               {isMounted && <CartBadge />}

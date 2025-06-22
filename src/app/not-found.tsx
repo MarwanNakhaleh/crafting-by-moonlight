@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Header } from "@/components/header";
+import Image from "next/image";
 
 export default function NotFound() {
   return (
@@ -10,6 +11,7 @@ export default function NotFound() {
         <p className="text-gray-600 mb-6">
           Sorry, we couldn&apos;t find the page you&apos;re looking for.
         </p>
+        <Image src={`/404_${Math.floor(Math.random() * 3)}.jpeg`} alt="404" width={300} height={300} />
         <Link
           href="/"
           className="text-blue-600 hover:underline font-medium"

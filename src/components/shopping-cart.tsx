@@ -49,7 +49,7 @@ export function ShoppingCart() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
-        <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
+        <Link href="/shop" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Continue Shopping
         </Link>
@@ -65,7 +65,7 @@ export function ShoppingCart() {
           <h2 className="text-2xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
           <p className="text-gray-600 mb-6">Add some awesome 3D printed items to get started!</p>
           <Button asChild>
-            <Link href="/">
+            <Link href="/shop">
               Start Shopping
             </Link>
           </Button>
