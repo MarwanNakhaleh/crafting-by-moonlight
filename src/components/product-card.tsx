@@ -85,7 +85,7 @@ export function ProductCard({ id, title, description, imageUrl, price, category,
           </div>
           
           {/* Buttons */}
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             <Button 
               onClick={handleAddToCart}
               disabled={isAdding || isBuyingNow}
@@ -132,7 +132,7 @@ export function ProductCard({ id, title, description, imageUrl, price, category,
                 </>
               )}
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
