@@ -1,13 +1,19 @@
+export interface AvailableColor {
+  hex: string;
+  imageUrl: string;
+  hoverText?: string;
+  colorName?: string;
+}
+
 export interface Product {
   id: string;
   title: string;
   name: string;
   description: string;
   price: number;
-  imageUrl: string;
-  image: string;
   category: string;
-  quantity?: number; 
+  quantity?: number;
+  availableColors: AvailableColor[];
 }
 
 export interface CartItem extends Product {

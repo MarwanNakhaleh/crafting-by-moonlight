@@ -16,11 +16,14 @@ export function CartProductCard({
   title,
   price,
   quantity = 0,
-  imageUrl,
+  availableColors,
   category,
   onUpdateQuantity,
   onRemove,
 }: CartProductCardProps) {
+  
+  // Get the first available color's image as the default
+  const imageUrl = availableColors && availableColors.length > 0 ? availableColors[0].imageUrl : '';
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity < 1) {
       onRemove(id);
@@ -36,7 +39,7 @@ export function CartProductCard({
           src={imageUrl}
           alt={title}
           fill
-          className="object-cover rounded-md"
+          className="object-contain rounded-md bg-gray-50"
         />
       </div>
       

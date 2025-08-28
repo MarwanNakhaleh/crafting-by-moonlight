@@ -9,7 +9,7 @@ export default function Shop() {
       <Header />
       <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-20">
         <ProductGrid />
-        <div className="mt-10 text-center">
+        {/* <div className="mt-10 text-center">
           <p className="text-gray-600">New here? Create an account or log in to shop:</p>
           <div className="mt-4 flex justify-center gap-4">
             <Button asChild variant="outline">
@@ -19,7 +19,7 @@ export default function Shop() {
               <Link href="/shop/signup">Sign Up</Link>
             </Button>
           </div>
-        </div>
+        </div> */}
       </main>
     </div>
   );

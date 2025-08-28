@@ -26,21 +26,26 @@ export async function POST(req: Request) {
       );
     }
 
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = itemsToCheckout.map((item) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: item.title,
-          description: item.description,
-          images: [item.imageUrl],
-          metadata: {
-            category: item.category,
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = itemsToCheckout.map((item) => {
+      // Get the first available color's image as the default
+      const imageUrl = item.availableColors && item.availableColors.length > 0 ? item.availableColors[0].imageUrl : '';
+      
+      return {
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.title,
+            description: item.description,
+            images: imageUrl ? [imageUrl] : [],
+            metadata: {
+              category: item.category,
+            },
           },
+          unit_amount: Math.round(item.price * 100), // Convert to cents
         },
-        unit_amount: Math.round(item.price * 100), // Convert to cents
-      },
-      quantity: item.quantity,
-    }));
+        quantity: item.quantity,
+      };
+    });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

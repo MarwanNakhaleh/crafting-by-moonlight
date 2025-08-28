@@ -1,18 +1,5 @@
 import { ProductCard } from "@/components/product-card";
-import { Product } from "@/types/product";
-
-const sampleProducts: Product[] = [
-  {
-    id: "1",
-    title: "Coming Soon",
-    name: "Coming Soon",
-    description: "Coming Soon",
-    price: 0,
-    imageUrl: "/ghost_coming_soon.png",
-    image: "/ghost_coming_soon.png",
-    category: "Coming Soon",
-  },
-];
+import { sampleProducts } from "@/data/sample-products";
 
 export function ProductGrid() {
   return (
