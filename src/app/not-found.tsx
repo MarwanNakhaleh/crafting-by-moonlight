@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { Header } from "@/components/header";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  description: "Sorry, we couldn't find the page you're looking for.",
+};
 
 export default function NotFound() {
   return (

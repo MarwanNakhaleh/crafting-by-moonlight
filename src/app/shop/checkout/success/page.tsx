@@ -7,6 +7,12 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Package, Home, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/contexts/cart-context";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Order Success",
+  description: "Thank you for your order! Your purchase has been confirmed.",
+};
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();

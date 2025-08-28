@@ -1,6 +1,12 @@
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Crafting by Moonlight",
+  description: "Welcome to Crafting by Moonlight - where creativity meets precision under the gentle glow of the moon. We specialize in creating beautiful, high-quality 3D printed items.",
+};
 
 export default function Home() {
   return (

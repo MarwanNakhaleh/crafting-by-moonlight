@@ -2,6 +2,12 @@ import { Header } from "@/components/header";
 import { ProductGrid } from "@/components/product-grid";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Browse our collection of beautiful, high-quality 3D printed items. Find the perfect piece to bring magic to your everyday life.",
+};
 
 export default function Shop() {
   return (

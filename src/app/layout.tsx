@@ -14,7 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Crafting By Moonlight",
+  title: {
+    template: "Crafting by Moonlight - %s",
+    default: "Crafting by Moonlight",
+  },
   description: "Crafting magic under the moon",
 };
 

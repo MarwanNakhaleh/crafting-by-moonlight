@@ -1,5 +1,11 @@
 import { LoginForm } from "@/components/login-form";
 import { Header } from "@/components/header";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  description: "Sign in to your Crafting by Moonlight account to access your orders and saved items.",
+};
 
 export default function LoginPage() {
   return (
