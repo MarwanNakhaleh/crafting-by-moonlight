@@ -7,6 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(req: Request) {
+  console.log('req', req);
   try {
     const body = await req.json();
     const { cartItems, buyNowItem }: { cartItems?: CartItem[], buyNowItem?: Product } = body;
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
 
     if (buyNowItem) {
       // Single item "Buy Now" checkout
-      itemsToCheckout = [{ ...buyNowItem, quantity: 1 }];
+      itemsToCheckout = [{ ...buyNowItem, quantity: 1, chosenColor: buyNowItem.availableColors[0].hex }];
     } else if (cartItems && cartItems.length > 0) {
       // Regular cart checkout
       itemsToCheckout = cartItems;
@@ -27,8 +28,18 @@ export async function POST(req: Request) {
     }
 
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = itemsToCheckout.map((item) => {
-      // Get the first available color's image as the default
-      const imageUrl = item.availableColors && item.availableColors.length > 0 ? item.availableColors[0].imageUrl : '';
+      // Get the chosen color's image, or fallback to first available color
+      let imageUrl = '';
+      if (item.chosenColor && item.availableColors) {
+        const chosenColorObj = item.availableColors.find(color => color.hex === item.chosenColor);
+        imageUrl = chosenColorObj?.imageUrl || '';
+      }
+      // Fallback to first available color if no chosen color image found
+      if (!imageUrl && item.availableColors && item.availableColors.length > 0) {
+        imageUrl = item.availableColors[0].imageUrl;
+      }
+      const fullImageUrl = `${process.env.NEXT_PUBLIC_BASE_URL}${imageUrl}`;
+      console.log('Full Image URL:', fullImageUrl);
       
       return {
         price_data: {
@@ -36,9 +47,10 @@ export async function POST(req: Request) {
           product_data: {
             name: item.title,
             description: item.description,
-            images: imageUrl ? [imageUrl] : [],
+            images: imageUrl ? [fullImageUrl] : [],
             metadata: {
               category: item.category,
+              chosenColor: item.chosenColor || '',
             },
           },
           unit_amount: Math.round(item.price * 100), // Convert to cents
@@ -62,8 +74,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Stripe checkout error:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = "Failed to create checkout session";
+    
+    if (error instanceof Stripe.errors.StripeError) {
+      errorMessage = `Stripe error: ${error.message}`;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     return NextResponse.json(
-      { error: "Failed to create checkout session" },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      },
       { status: 500 }
     );
   }

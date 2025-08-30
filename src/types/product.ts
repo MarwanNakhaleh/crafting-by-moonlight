@@ -2,7 +2,6 @@ export interface AvailableColor {
   hex: string;
   imageUrl: string;
   hoverText?: string;
-  colorName?: string;
 }
 
 export interface Product {
@@ -18,4 +17,5 @@ export interface Product {
 
 export interface CartItem extends Product {
   quantity: number;
+  chosenColor: string;
 } 

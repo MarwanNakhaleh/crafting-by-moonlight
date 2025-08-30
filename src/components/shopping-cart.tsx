@@ -9,7 +9,7 @@ import { useCart } from "@/contexts/cart-context";
 import { useState } from "react";
 
 export function ShoppingCart() {
-  const { cartItems, updateQuantity, removeFromCart, getCartItemCount } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartItemCount, isLoaded } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handleCheckout = async () => {
@@ -46,6 +46,22 @@ export function ShoppingCart() {
   const total = subtotal + tax + shipping;
   const itemCount = getCartItemCount();
 
+  // Show loading state during hydration
+  if (!isLoaded) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <Link href="/shop" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Continue Shopping
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <p className="text-gray-600 mt-2">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -77,7 +93,7 @@ export function ShoppingCart() {
               <h2 className="text-xl font-semibold mb-6">Cart Items</h2>
               {cartItems.map((item) => (
                 <CartProductCard
-                  key={item.id}
+                  key={`${item.id}-${item.chosenColor}`}
                   {...item}
                   onUpdateQuantity={updateQuantity}
                   onRemove={removeFromCart}

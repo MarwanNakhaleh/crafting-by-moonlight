@@ -2,28 +2,26 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Product } from "@/types/product";
 import { useCart } from "@/contexts/cart-context";
-import { ShoppingCart, Check, Zap, Loader2 } from "lucide-react";
+import { ShoppingCart, Check, Zap, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 
 type ProductCardProps = Product;
 
 export function ProductCard({ id, title, description, price, category, availableColors, ...product }: ProductCardProps) {
-  const { addToCart, isInCart } = useCart();
+  const { addToCart, isInCart, isLoaded } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const [isBuyingNow, setIsBuyingNow] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   
   // Get the first available color's image as the default
   const defaultImageUrl = availableColors && availableColors.length > 0 ? availableColors[0].imageUrl : '';
   const [currentImageUrl, setCurrentImageUrl] = useState(defaultImageUrl);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+
 
   const handleColorSelect = (hexColor: string) => {
     const selectedColorObj = availableColors?.find(color => color.hex === hexColor);
@@ -35,13 +33,15 @@ export function ProductCard({ id, title, description, price, category, available
 
   // Get the selected color info for display
   const selectedColorObj = selectedColor ? availableColors?.find(color => color.hex === selectedColor) : null;
-  const selectedColorName = selectedColorObj?.colorName;
   const selectedColorHoverText = selectedColorObj?.hoverText;
 
   const handleAddToCart = async () => {
     setIsAdding(true);
     const productToAdd: Product = { id, title, description, price, category, availableColors, ...product };
-    addToCart(productToAdd);
+    
+    // Use selected color or default to first available color
+    const colorToAdd = selectedColor || (availableColors && availableColors.length > 0 ? availableColors[0].hex : undefined);
+    addToCart(productToAdd, colorToAdd);
     
     setJustAdded(true);
     setIsAdding(false);
@@ -72,39 +72,48 @@ export function ProductCard({ id, title, description, price, category, available
         window.location.href = data.url;
       } else {
         console.error('Buy now checkout error:', data.error);
-        alert('Failed to start checkout. Please try again.');
+        console.error('Full error details:', data.details);
+        alert(`Failed to start checkout: ${data.error || 'Unknown error'}. Please try again.`);
       }
     } catch (error) {
       console.error('Network error:', error);
       alert('Network error. Please check your connection and try again.');
+    } finally {
+      setIsBuyingNow(false);
     }
   };
 
-  const inCart = isMounted && isInCart(id);
+  const colorForCartCheck = selectedColor || (availableColors && availableColors.length > 0 ? availableColors[0].hex : undefined);
+  const inCart = isLoaded && isInCart(id, colorForCartCheck);
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow hover:shadow-lg transition-all duration-300">
+    <div className="rounded-lg border border-gray-200 bg-white shadow hover:shadow-lg transition-all duration-300 flex flex-col h-full">
       <div className="relative">
         <Image
-          src={currentImageUrl}
+          src={currentImageUrl || "/ghost_coming_soon.png"}
           alt={title}
           width={500}
           height={400}
           className="w-full h-80 object-contain rounded-t-lg bg-gray-50"
         />
       </div>
-      <div className="p-6 flex flex-col gap-3">
+      <div className="p-6 flex flex-col gap-3 flex-1">
         <div className="flex justify-between items-start">
           <h3 className="text-xl font-semibold text-gray-900 leading-tight">
             {title}
-            {selectedColorName && <span className="text-gray-600"> ({selectedColorName})</span>}
           </h3>
           <span className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-600 font-medium">{category}</span>
         </div>
-        <p className="text-base text-gray-600 leading-relaxed">
-          {description}
-          {selectedColorHoverText && <span> ({selectedColorHoverText})</span>}
-        </p>
+        <div className="flex items-start gap-2">
+          <p className="text-base text-gray-600 leading-relaxed flex-1">
+            {description}
+          </p>
+          {selectedColorHoverText && (
+            <Tooltip content={selectedColorHoverText}>
+              <Info className="w-8 h-8 text-gray-400 hover:text-gray-600 transition-colors mt-0.5 flex-shrink-0" />
+            </Tooltip>
+          )}
+        </div>
         
         {/* Color Selection */}
         {availableColors && availableColors.length > 1 && (
@@ -150,7 +159,12 @@ export function ProductCard({ id, title, description, price, category, available
                   <Check className="w-4 h-4 mr-1" />
                   Added!
                 </>
-              ) : (isMounted && inCart) ? (
+              ) : !isLoaded ? (
+                <>
+                  <ShoppingCart className="w-4 h-4 mr-1" />
+                  Add to Cart
+                </>
+              ) : inCart ? (
                 <>
                   <ShoppingCart className="w-4 h-4 mr-1" />
                   Add More
